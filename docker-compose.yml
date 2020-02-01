@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  mongodb:
+    image: mongo
+    hostname: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: admin
+      MONGO_REPLICA_SET_NAME: rs-example
+    ports:
+      - 27017:27017
+    healthcheck:
+        test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
+        interval: 10s
+        start_period: 30s
+    command: ["--replSet", "example-rs"]
